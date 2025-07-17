@@ -1,4 +1,4 @@
-// middlewares/checkProductCache.js
+import createError from "http-errors";
 import { scrapeSingleProduct } from "../lib/scrapeSingleProduct.js";
 import ProductPrice from "../models/ProductPrice.js";
 
@@ -7,7 +7,7 @@ export async function checkProductCache(req, res, next) {
     const { slug } = req.query;
 
     if (!slug) {
-      return res.status(400).json({ error: 'Falta el parámetro "slug"' });
+      return next(createError(400, 'Falta el parámetro "slug"'));
     }
 
     const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
@@ -27,11 +27,13 @@ export async function checkProductCache(req, res, next) {
     const scrapedData = await scrapeSingleProduct(slug);
 
     // Validación mínima: si no hay título o el precio no es número positivo
-    if (!scrapedData.title || scrapedData.price <= 0) {
-      return res.status(404).json({
-        error:
-          "Producto no encontrado, por favor introduzca el nombre correcto",
-      });
+    if (!scrapedData.title) {
+      return next(
+        createError(
+          404,
+          "Producto no encontrado, por favor introduzca el nombre correcto"
+        )
+      );
     }
 
     // solo se ejecuta si: El producto no está en MongoDB, O está, pero con más de 24 horas de antigüedad

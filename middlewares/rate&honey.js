@@ -1,4 +1,5 @@
 import rateLimit from 'express-rate-limit';
+import createHttpError from 'http-errors';
 
 // RATE LIMITER POR IP (2 cada 1 minuto)
 export const limitProductSearch = rateLimit({
@@ -15,7 +16,7 @@ export const limitProductSearch = rateLimit({
 export function honeypotProtection(req, res, next) {
   const honeypot = req.body?.honeypot || req.query?.honeypot;
   if (honeypot && honeypot.trim() !== '') {
-    return res.status(403).json({ error: 'Acceso denegado (bot detectado).' });
+    return next(createError(403, 'Acceso denegado (bot detectado)'));
   }
   next();
 }
