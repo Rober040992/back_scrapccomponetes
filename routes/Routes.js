@@ -1,9 +1,9 @@
 import express from 'express';
-import { getSingleProduct } from '../controllers/APi/singleProductController.js';
+import { checkProductCache } from '../middlewares/checkProductCache.js';
+import { getSingleProduct } from '../controllers/APi/getSingleProductController.js';
 
 const router = express.Router();
 
-router.get('/api/products/one', getSingleProduct);
-
+router.get('/api/products/one', checkProductCache, getSingleProduct);
 
 export default router;
