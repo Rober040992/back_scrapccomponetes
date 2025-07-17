@@ -1,5 +1,5 @@
 import rateLimit from 'express-rate-limit';
-import createHttpError from 'http-errors';
+import createError  from 'http-errors';
 
 // RATE LIMITER POR IP (2 cada 1 minuto)
 export const limitProductSearch = rateLimit({
