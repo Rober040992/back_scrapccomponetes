@@ -39,6 +39,7 @@
     "mongoose": "^8.16.0",
     "morgan": "1.10.0",
     "multer": "^2.0.1",
+    "puppeteer": "^24.13.0",
     "zod": "^3.25.67"
   },
   "devDependencies": {
