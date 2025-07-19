@@ -10,12 +10,12 @@ export async function checkProductCache(req, res, next) {
       return next(createError(400, 'Falta el parámetro "slug"'));
     }
 
-    const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+    const cacheLimitDate  = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000); // ultimos 7 dias
 
     // Busca el producto más reciente
     const recentProduct = await ProductPrice.findOne({
       slug,
-      createdAt: { $gte: oneDayAgo },
+      createdAt: { $gte: cacheLimitDate  },
     }).sort({ createdAt: -1 });
 
     if (recentProduct) {
