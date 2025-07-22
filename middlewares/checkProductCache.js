@@ -1,5 +1,5 @@
 import createError from "http-errors";
-import { scrapeSingleProduct } from "../lib/scrapeSingleProduct.js";
+import { scraperQueue } from "../queues/scraperQueue.js";
 import ProductPrice from "../models/ProductPrice.js";
 
 export async function checkProductCache(req, res, next) {
@@ -10,12 +10,12 @@ export async function checkProductCache(req, res, next) {
       return next(createError(400, 'Falta el parámetro "slug"'));
     }
 
-    const cacheLimitDate  = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000); // ultimos 7 dias
+    const cacheLimitDate = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000); // ultimos 7 dias
 
     // Busca el producto más reciente
     const recentProduct = await ProductPrice.findOne({
       slug,
-      createdAt: { $gte: cacheLimitDate  },
+      createdAt: { $gte: cacheLimitDate },
     }).sort({ createdAt: -1 });
 
     if (recentProduct) {
@@ -23,30 +23,34 @@ export async function checkProductCache(req, res, next) {
       return next();
     }
 
-    // Si no hay producto reciente, scrapeamos
-    const scrapedData = await scrapeSingleProduct(slug);
+    // Si no hay producto reciente, encola y espera (polling)
+    await scraperQueue.add("scrape", { slug });
 
-    // Validación mínima: si no hay título o el precio no es número positivo
-    if (!scrapedData.title) {
-      return next(
-        createError(
-          404,
-          "Producto no encontrado, por favor introduzca el nombre correcto"
-        )
-      );
+    // Polling: espera hasta 20s a que el producto aparezca en la DB
+    const maxWaitMs = 20000;
+    const pollIntervalMs = 1000;
+    let waited = 0;
+    let product = null;
+    while (waited < maxWaitMs) {
+      product = await ProductPrice.findOne({
+        slug,
+        createdAt: { $gte: cacheLimitDate },
+      }).sort({ createdAt: -1 });
+      if (product) break;
+      await new Promise(r => setTimeout(r, pollIntervalMs));
+      waited += pollIntervalMs;
     }
 
-    // solo se ejecuta si: El producto no está en MongoDB, O está, pero con más de 24 horas de antigüedad
-    const newProduct = await ProductPrice.create(
-      {
+    if (product) {
+      res.locals.product = product;
+      return next();
+    } else {
+      res.status(202).json({
+        message: "Producto encolado para scrapeo. Prueba en unos minutos.",
         slug,
-        ...scrapedData,
-      },
-      console.log(" Poducto guardado en DB para cache ")
-    );
-
-    res.locals.product = newProduct;
-    next();
+      });
+      return;
+    }
   } catch (error) {
     next(error);
   }

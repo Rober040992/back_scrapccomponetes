@@ -22,11 +22,13 @@
   "type": "module",
   "scripts": {
     "start": "node --watch ./bin/www",
-    "debug": "cross-env PORT=5555 DEBUG=npx-men-api-scaffold:* npm start",
+    "debug": "cross-env PORT=5555 DEBUG=npx-backscrap:* npm start",
     "dev": "cross-env PORT=4444 npm start",
+    "worker": "node workers/scraperWorker.js",
     "lint": "eslint ."
   },
   "dependencies": {
+    "bullmq": "^5.56.5",
     "connect-mongo": "^5.1.0",
     "cors": "^2.8.5",
     "cross-env": "7.0.3",
@@ -36,6 +38,7 @@
     "express-rate-limit": "^8.0.1",
     "express-session": "^1.18.1",
     "http-errors": "2.0.0",
+    "ioredis": "^5.6.1",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.16.0",
     "morgan": "1.10.0",
