@@ -18,6 +18,9 @@ export async function checkProductCache(req, res, next) {
       createdAt: { $gte: cacheLimitDate },
     }).sort({ createdAt: -1 });
 
+    console.log('[CACHE] slug recibido:', slug)
+    console.log('[CACHE] encontrado en Mongo:', recentProduct)
+
     if (recentProduct) {
       res.locals.product = recentProduct;
       return next();

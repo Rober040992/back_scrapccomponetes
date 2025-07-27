@@ -3,7 +3,7 @@ import createError  from 'http-errors';
 
 // RATE LIMITER POR IP (2 cada 1 minuto)
 export const limitProductSearch = rateLimit({
-  windowMs: 60 * 1000, // 1 minuto
+  windowMs: 30 * 1000, // 1 minuto
   max: 2,
   message: {
     error: 'Demasiadas peticiones. Intenta de nuevo en un momento.',
