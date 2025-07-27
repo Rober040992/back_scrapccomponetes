@@ -3,6 +3,7 @@ import express from "express";
 import createError from "http-errors";
 import logger from "morgan";
 import connectMongoose from "./lib/mongooseConfig.js";
+import cors from "cors";
 import routes from "./routes/Routes.js";
 //API controllers imports
 
@@ -11,6 +12,8 @@ console.log("✅ MongoDB connected!");
 
 const app = express();
 
+// Permitir CORS desde frontend
+app.use(cors({ origin: "http://localhost:3000" }))
 // morgan logger for http requests logs
 app.use(logger("dev"));
 // transforms json objects into js objects
