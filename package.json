@@ -25,7 +25,8 @@
     "debug": "cross-env PORT=5555 DEBUG=npx-backscrap:* npm start",
     "dev": "cross-env PORT=4444 npm start",
     "worker": "node workers/scraperWorker.js",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "weekly-scrape": "node ./jobs/weeklyScraper.js"
   },
   "dependencies": {
     "bullmq": "^5.56.5",
@@ -43,6 +44,7 @@
     "mongoose": "^8.16.0",
     "morgan": "1.10.0",
     "multer": "^2.0.1",
+    "node-cron": "^4.2.1",
     "puppeteer": "^24.13.0",
     "zod": "^3.25.67"
   },

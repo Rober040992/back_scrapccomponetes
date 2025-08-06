@@ -7,6 +7,8 @@ import 'dotenv/config'
 import { createServer } from 'node:http'
 import app from '../app.js'
 import debugLib from 'debug'
+// auto scrap semanal
+import '../jobs/weeklyScraper.js'
 
 const debug = debugLib('npx-create-men-api:server')
 
