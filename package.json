@@ -26,7 +26,8 @@
     "dev": "cross-env PORT=4444 npm start",
     "worker": "node workers/scraperWorker.js",
     "lint": "eslint .",
-    "weekly-scrape": "node ./jobs/weeklyScraper.js"
+    "weekly-scrape": "node ./jobs/weeklyScraper.js",
+    "test": "node --test"
   },
   "dependencies": {
     "bullmq": "^5.56.5",

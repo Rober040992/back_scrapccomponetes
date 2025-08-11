@@ -30,7 +30,7 @@ export async function runWeeklyScraper() {
         'scrape',
         { slug },
         {
-          delay: i * 20000, // 1 cada 20s
+          delay: i * 10000, // 1 cada 10s
           removeOnComplete: true,
           removeOnFail: true,
         }
