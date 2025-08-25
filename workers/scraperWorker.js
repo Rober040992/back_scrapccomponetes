@@ -7,31 +7,27 @@ import { scrapeSingleProduct } from "../lib/scrapeSingleProduct.js";
 import ProductPrice from "../models/ProductPrice.js";
 import connectMongoose from "../lib/mongooseConfig.js";
 
+// para iniciar el worker necesito acceso a la DB
 await connectMongoose();
 
 const scraperWorker = new Worker(
   'scraperQueue',
   async (job) => {
     const { slug } = job.data;
-
+    // ejecutamos el scraper real
     const scraped = await scrapeSingleProduct(slug);
 
     if (scraped?.title && scraped?.price) {
-      const exists = await ProductPrice.findOne({ slug });
-
-      if (!exists) {
-        await ProductPrice.create({ slug, ...scraped });
-        console.log(`✅ Producto ${slug} guardado en DB`);
-      } else {
-        console.log(`ℹ️ Producto ${slug} ya existe. No se guarda de nuevo.`);
-      }
+      // ✅ Siempre guarda un nuevo documento (crea histórico)
+      await ProductPrice.create({ slug, ...scraped });
+      console.log(`✅ Snapshot de ${slug} guardado en DB`);
     } else {
       console.warn(`❌ Scrape fallido para ${slug}`);
     }
   },
   { connection: redis }
 );
-
+// Logging de eventos del worker
 scraperWorker.on('completed', (job) => {
   console.log(`🎉 Job ${job.id} completado`);
 });
