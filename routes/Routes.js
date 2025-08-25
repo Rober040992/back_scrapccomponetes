@@ -5,6 +5,8 @@ import { honeypotProtection, limitProductSearch } from "../middlewares/rate&hone
 import { getProductStatus } from "../controllers/API/getProductStatusController.js";
 import { zodValidator } from "../middlewares/validate.js";
 import { oneProductQuerySchema, productStatusParamsSchema } from "../validators/productSchemas.js";
+import { getPriceSeries } from "../controllers/APi/getPriceSeriesController.js";
+
 
 
 const router = express.Router();
@@ -25,6 +27,13 @@ router.get(
   limitProductSearch,
   zodValidator(productStatusParamsSchema, 'params'),
   getProductStatus
+);
+
+router.get(
+  "/api/products/:slug/series",
+  honeypotProtection,
+  limitProductSearch,
+  getPriceSeries
 );
 
 export default router;
