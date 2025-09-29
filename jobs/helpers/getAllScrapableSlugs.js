@@ -35,6 +35,15 @@ export async function getAllScrapableSlugs() {
   }).distinct('slug')
 
   const cleanSlugs = allSlugs.filter(slug => !recentlyScraped.includes(slug))
+  
+  // log de slugs base y en DDBB
+  console.log({
+  base: baseSlugs.length,
+  db: discoveredSlugs.length,
+  union: allSlugs.length,
+  recent: recentlyScraped.length,
+  final: cleanSlugs.length
+})
 
   return cleanSlugs
 }
